@@ -1,0 +1,440 @@
+<html>
+  <head>
+    <title> {{.Package.Name.Name}} package </title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  </head>
+  <style>
+    body {
+        display: flex;           /* establish flex container */
+        flex-direction: column;  /* make main axis vertical */
+        /*justify-content: center; /* center items vertically, in this case */
+        height: 100vh;
+
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans", Ubuntu, Cantarell, "Helvetica Neue", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+        margin-left: 2rem;
+        max-width: 1100px;
+	    color: #2E3440;
+
+        
+    }
+
+    .active-item {
+        background-color:#5E81AC;
+        color:  #ECEFF4;
+    }
+    
+    #modal  {
+        border: 1px solid #D8DEE9;
+        width: 25rem;
+        padding: 0.5rem 0.5rem 0.5rem;
+        gap: 1rem;
+        display: flex;
+        flex-direction: column;
+        position: fixed;
+        gap: 1rem;
+        left:0;
+        right:0;
+        margin:auto;
+        background-color: #ECEFF4;
+    }
+
+    #list-wrap {
+        height: 12rem;
+        background-color: #E5E9F0;
+        /*border: 1px solid black;*/
+        display:flex;
+        flex-direction:column;
+        overflow-y: auto;
+        width: 100%;
+        
+    }
+
+    #myInput {
+        width: 100%;
+        height: 2rem;
+        border: none;
+    }
+
+    #myInput:focus {
+        border: 2px solid #5E81AC;
+        outline: transparent;
+    }
+
+    #myUL {
+        max-height: 3rem;
+        overflow: auto;
+        list-style: none;
+    }
+
+    #myUL li {
+        margin-bottom: 0.6rem;
+    }
+
+    #close-modal {
+        text-align: right;
+    }
+
+    #header h3{
+        margin-top: 0;
+        margin-bottom: 0;
+    }
+
+    #content {
+        grid-template-columns: 21.5% minmax(0,auto);
+        grid-template-rows: repeat(5,min-content);
+        display: grid;
+        flex-grow: 1;
+        grid-gap: 3rem;
+    }
+
+    .invisible-item {
+        display: none;
+        visibility: hidden;
+    }
+
+    .func-name, a {
+	    color: #5E81AC;
+    }
+    
+
+    .left-navbar ul {
+        list-style-type: none;
+        padding: 0px;
+    }
+
+    .left-navbar li {
+        padding: 0px;
+    }
+
+
+
+    h2, h3, h4 {
+        margin-top: 2rem;
+        margin-bottom: 0.5rem;
+    }
+
+
+    pre {
+	    border: none;
+	    padding: 0.5rem;
+        background-color: #ECEFF4;
+	    border-radius: 5px;
+        overflow: auto;
+    }
+
+    .header {
+        top: 0;
+        width: 100%;
+    }
+
+
+  </style>
+  
+  <body>
+
+
+
+    <div>
+      <h2> {{.Package.Name.Name}} </h2>
+    </div>
+    
+    
+    <div id="content">
+      <nav class="left-navbar">
+        {{ if .PackageList }}
+        <h3> Packages </h3>
+        <ul>
+          {{ range .PackageList }}
+          <li>
+            <a href="{{ .Name.Name }}.html"> {{ .Name.Name }} </a>
+          </li>
+          {{end}}
+        </ul>
+        {{ end }}
+        
+      </nav>
+      
+      <article>
+        {{ with .Package }}
+        {{ with .Doc}}
+        <h3> Overview </h3>
+		<p>
+		  {{.Text}}
+		<p>
+		  {{end}}
+
+	      <!-- Constant, variables, types -->
+
+          {{ if .VarDecls}}
+          <h3> Variables, constants </h3>
+          {{ range .VarDecls }}
+          <h4 id="var_{{.Name.Name}}"> {{- varHeader . }} <span class="func-name"> {{ .Name.Name }} </span> </h4>
+          <pre>{{ .String }}</pre>
+        <p> {{ .Doc.Text }} </p>
+        {{ end }}
+        {{ end }}
+
+
+        <!-- Functions, procedures -->
+        {{ if .FuncSpecs }}
+        <h3> Functions, procedures </h3>
+        {{ range .FuncSpecs }}
+        <h4 id="function_{{.Name.Name}}"> {{- funcHeader . }} <span class="func-name">{{ .Name.Name }} </span> </h4>
+
+        <pre>{{ funcListing . }}</pre>
+        {{ formatComment .Doc }}
+        {{ end }}
+        {{ end }}
+
+        <!-- Types -->
+        {{ if .TypeDecls }}
+        <h3> Types </h3>
+        {{ range .TypeDecls }}
+        <h4 id="type_{{.Name.Name}}"> {{- typeHeader . }} <span class="func-name">{{ .Name.Name }} </span> </h4>
+        <pre>{{ typeListing . }}</pre>
+        <p> {{ .Doc.Text }} </p>
+        {{ end }}
+        {{ end }}
+
+        <!-- Cursors -->
+        {{ if .CursorDecls }}
+        <h3> Cursors </h3>
+        {{ range .CursorDecls }}
+        <h4 id="cursor_{{.Name.Name}}"> cursor <span class="func-name">{{ .Name.Name }} </span> </h4>
+        <pre>{{ cursorListing . }}</pre>
+        <p> {{ .Doc.Text }} </p>
+        {{ end }}
+        {{ end }}
+        <!-- With Package end -->
+        {{ end }}
+
+
+        
+        
+      </article>
+    </div>
+
+
+    <div id="modal" class="invisible-item">
+      <div id="header">
+        <h3> Quick jump </h3>
+      </div>
+      
+      <input type="text" autocomplete="off" id="myInput" placeholder="Search...">
+      <div id="list-wrap">
+        {{ with .Package }}
+        {{ range .VarDecls }}
+        <a href="#var_{{.Name.Name}}"> {{- varHeader . }} {{ .Name.Name }} </a>
+        {{ end }}
+
+        {{ range .FuncSpecs }}
+        <a href="#function_{{.Name.Name}}"> {{- funcHeader . }} {{ .Name.Name }} </a>
+        {{ end }}
+
+        {{ range .TypeDecls }}
+        <a href="#type_{{.Name.Name}}"> {{- typeHeader . }} {{ .Name.Name }} </a>
+        {{ end }}
+
+        {{ range .CursorDecls }}
+        <a href="#cursor_{{.Name.Name}}"> cursor {{ .Name.Name }} </a>
+        {{ end }}
+        <!-- With package end -->
+        {{ end }}
+
+      </div>
+      <div id="close-modal">
+        <button onclick="toggleDialog()"> Close </button>
+      </div>
+    </div>
+  </body>
+
+
+
+  <script>
+    function myFunction(e) {
+
+        if (e.key == 'ArrowDown' || e.key == 'ArrowUp') {
+            return
+        }
+        
+        // Declare variables
+        var input, filter, ul, li, a, i, txtValue;
+        input = document.getElementById('myInput');
+        filter = input.value.toUpperCase();
+        lw = document.getElementById('list-wrap');
+        li = lw.getElementsByTagName('a');
+        let match = false;
+
+        // Loop through all list items, and hide those who don't match the search query
+        for (i = 0; i < li.length; i++) {
+            txtValue = li[i].textContent;
+
+            if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                li[i].classList.remove('invisible-item')
+            } else {
+                li[i].classList.add('invisible-item')
+            }
+        }
+
+        activeItemIdx = -1;
+        removeActiveItems();
+        activateItem(activeItemIdx);
+
+    }
+
+    function makeAllItemsVisible() {
+        let itemList = document.getElementById('list-wrap')
+        let list = itemList.children
+
+        if (!list) {
+            return
+        }
+
+        for(let i = 0; i < list.length; i++) {
+            list[i].classList.remove('invisible-item')
+        }
+    }
+        
+    function toggleDialog() {
+        modal = document.getElementById('modal')
+        input = document.getElementById('myInput')
+
+        if (!modal.classList.contains('invisible-item')) {
+            modal.classList.add('invisible-item')
+        } else {
+            modal.classList.remove('invisible-item')
+            input.value = ""
+            removeActiveItems()
+            makeAllItemsVisible()
+            input.focus()
+        }
+    }
+
+    function keyDownHandler(e) {
+        modal = document.getElementById('modal')
+        isVisible = !modal.classList.contains('invisible-item')
+        if ((e.key == 'Escape') && (isVisible)) {
+            modal.classList.add('invisible-item')
+        }
+
+        if (e.key == 'f' && !(e.ctrlKey || e.altKey || e.shiftKey || e.metaKey) && !isVisible) {
+            toggleDialog()
+            e.preventDefault()
+        }
+
+        if (e.key == 'ArrowDown' && isVisible) {
+                                                
+            activateItem(activeItemIdx + 1)
+            e.preventDefault()
+        }
+
+        if (e.key == 'ArrowUp' && isVisible) {
+            activateItem(activeItemIdx - 1)
+            e.preventDefault()
+        }
+
+        if (e.key == 'Enter' && isVisible) {
+            let item = getActiveItem()
+
+            jumpToAnchor(item.getAttribute('href'))
+            toggleDialog()
+        }
+    }
+
+    let activeItemIdx = -1
+
+    function getActiveItem() {
+        let items = getVisibleItems()
+
+        if (!items) {
+            return
+        }
+
+        if (activeItemIdx < items.length ) {
+            return items[activeItemIdx]
+        }
+    }
+    
+    function jumpToAnchor(id) {
+        location.hash = id
+    }
+
+    function getVisibleItems() {
+        let itemList = document.getElementById('list-wrap')
+        let list = itemList.querySelectorAll(':not(.invisible-item)')
+
+        return list
+    }
+    
+    function activateItem(num) {
+
+        let list = getVisibleItems()
+
+        if (!list) {
+            return
+        }
+        
+        if (activeItemIdx != num && activeItemIdx >= 0) {
+            list[activeItemIdx].classList.remove('active-item')
+        }
+        
+        if (num >= 0 && num <= list.length - 1) {
+            list[num].classList.add('active-item')
+
+            console.log(itemList.clientHeight)
+            console.log(list[num].getBoundingClientRect().bottom)
+
+            // scroll if current active element is outside visible rectangle
+            if (list[num].getBoundingClientRect().bottom > itemList.getBoundingClientRect().bottom) {
+                list[num].scrollIntoView(false);
+            }
+
+            if (list[num].getBoundingClientRect().top < itemList.getBoundingClientRect().top) {
+                list[num].scrollIntoView();
+            } 
+            
+            activeItemIdx = num
+        }
+
+        if (num > list.length - 1 || num < 0) {
+            activeItemIdx = -1
+        }
+    }
+
+    // Removes class 'active-item' from all items
+    // in the search box
+    function removeActiveItems() {
+        let itemList = document.getElementById('list-wrap')
+        let list = itemList.children;
+
+        if (!list) {
+            return
+        }
+
+        for (var i = 0; i < list.length; i++) {
+            list[i].classList.remove('active-item')
+        }
+    }
+    
+    document.addEventListener('keydown', keyDownHandler);
+
+    let input = document.getElementById('myInput')
+    if (input) {
+        input.addEventListener('keyup', myFunction)
+    }
+
+    let itemList = document.getElementById('list-wrap')
+    let list = itemList.children
+
+    // Close search box when user clicks on an item
+    for(let i = 0; i < list.length; i++) {
+        list[i].addEventListener("click", function(e) {
+            toggleDialog();
+        })
+    }
+
+    
+  </script>
+  
+</html>
+
