@@ -5,7 +5,6 @@
 package main
 
 import (
-	//	"fmt"
 	"flag"
 	"github.com/cyevgeniy/pldoc/ast"
 	"github.com/cyevgeniy/pldoc/parser"
