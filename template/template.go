@@ -16,6 +16,12 @@ import (
 var (
 	//go:embed static/single.html
 	tmpl string
+
+	//go:embed static/main.css
+	css []byte
+
+	//go:embed static/pldoc.js
+	js []byte
 )
 
 func varHeader(vd *ast.Field) string {
@@ -221,16 +227,30 @@ func Execute(dir string, f *ast.Files) error {
 		"cursorListing": cursorListing,
 		"formatComment": formatComment,
 	}
+
+	// Prepare directory
+	err := os.Mkdir(dir, 0750)
+	if err != nil && !os.IsExist(err) {
+		return err
+	}
+
+	// Create css and js files
+	err = os.WriteFile(filepath.Join(dir, "main.css"), css, 0666)
+	if err != nil {
+		return err
+	}
+
+	err = os.WriteFile(filepath.Join(dir, "pldoc.js"), js, 0666)
+	if err != nil {
+		return err
+	}
+
+	
 	t, err := template.New("Documentation").Funcs(fm).Parse(tmpl)
 	if err != nil {
 		return err
 	}
 
-	// Prepare directory
-	err = os.Mkdir(dir, 0750)
-	if err != nil && !os.IsExist(err) {
-		return err
-	}
 
 	for i := range f.Files {
 		for fn := range f.Files[i].Packages {
