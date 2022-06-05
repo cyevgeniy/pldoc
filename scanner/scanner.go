@@ -1,7 +1,6 @@
 package scanner
 
 import (
-	//	"fmt"
 	"github.com/cyevgeniy/pldoc/token"
 	"log"
 	"strings"
