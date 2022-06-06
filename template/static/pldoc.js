@@ -1,182 +1,212 @@
-    function myFunction(e) {
+// Copyright 2022 Yevgeniy Chaban.
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file.
 
-        if (e.key == 'ArrowDown' || e.key == 'ArrowUp') {
-            return
-        }
-        
-        // Declare variables
-        var input, filter, ul, li, a, i, txtValue;
-        input = document.getElementById('myInput');
-        filter = input.value.toUpperCase();
-        lw = document.getElementById('list-wrap');
-        li = lw.getElementsByTagName('a');
-        let match = false;
+// This file is responsible for "Quick jump" search
+// box behaviour. It's inspired by the similar
+// search box as in the Go language's package documentation
+//
+// The search box is shown by pressing the 'f' key.
+// Arrow keys are used for moving between items in the list of
+// available items on the page. Pressing the 'Enter' key
+// performs jump to selected item. Pressing 'Escape' key
+// closes the box, as well as clicking the 'Close' button.
 
-        // Loop through all list items, and hide those who don't match the search query
-        for (i = 0; i < li.length; i++) {
-            txtValue = li[i].textContent;
+// The root element of search box
+let modal = document.getElementById('modal')
 
-            if (txtValue.toUpperCase().indexOf(filter) > -1) {
-                li[i].classList.remove('invisible-item')
-            } else {
-                li[i].classList.add('invisible-item')
-            }
-        }
+// Input field in the search box
+let input = document.getElementById('searchBoxInput')
 
-        activeItemIdx = -1;
-        removeActiveItems();
-        activateItem(activeItemIdx);
+// Parent element for "jump to" items
+let listWrapper = document.getElementById('list-wrap')
 
+// List of the "jump to" items
+var items = listWrapper.children
+
+let activeItemIdx = -1
+
+function isBoxVisible() {
+    return !modal.classList.contains('invisible-item')
+}
+
+function showNode(node) {
+    if (node) {
+        node.classList.remove('invisible-item')
+    }
+}
+
+function hideNode(node) {
+    if (node) {
+        node.classList.add('invisible-item')
+    }
+}
+
+// Adoptation of the code from
+// https://www.w3schools.com/howto/howto_js_filter_lists.asp
+function filterItems(e) {
+
+    if (e.key == 'ArrowDown' || e.key == 'ArrowUp') {
+        return
     }
 
-    function makeAllItemsVisible() {
-        let itemList = document.getElementById('list-wrap')
-        let list = itemList.children
+    // Declare variables
+    var filter, txtValue;
+    filter = input.value.toUpperCase();
 
-        if (!list) {
-            return
-        }
+    // Loop through all list items, and hide those who don't match the search query
+    for (let item of items) {
+        txtValue = item.textContent;
 
-        for(let i = 0; i < list.length; i++) {
-            list[i].classList.remove('invisible-item')
-        }
-    }
-        
-    function toggleDialog() {
-        modal = document.getElementById('modal')
-        input = document.getElementById('myInput')
-
-        if (!modal.classList.contains('invisible-item')) {
-            modal.classList.add('invisible-item')
+        if (txtValue.toUpperCase().indexOf(filter) > -1) {
+            showNode(item)
         } else {
-            modal.classList.remove('invisible-item')
-            input.value = ""
-            removeActiveItems()
-            makeAllItemsVisible()
-            input.focus()
+            hideNode(item)
         }
     }
 
-    function keyDownHandler(e) {
-        modal = document.getElementById('modal')
-        isVisible = !modal.classList.contains('invisible-item')
-        if ((e.key == 'Escape') && (isVisible)) {
-            modal.classList.add('invisible-item')
-        }
+    // On every new search, remove previous focused items
+    activeItemIdx = -1;
+    removeActiveItems();
+    activateItem(activeItemIdx);
+}
 
-        if (e.key == 'f' && !(e.ctrlKey || e.altKey || e.shiftKey || e.metaKey) && !isVisible) {
-            toggleDialog()
-            e.preventDefault()
-        }
+function makeAllItemsVisible() {
+    if (!items) {
+        return
+    }
 
-        if (e.key == 'ArrowDown' && isVisible) {
-                                                
-            activateItem(activeItemIdx + 1)
-            e.preventDefault()
-        }
+    for(let item of items) {
+        showNode(item)
+    }
+}
 
-        if (e.key == 'ArrowUp' && isVisible) {
-            activateItem(activeItemIdx - 1)
-            e.preventDefault()
-        }
+function toggleDialog() {
+    if (isBoxVisible()) {
+        hideNode(modal)
+    } else {
+        showNode(modal)
+        input.value = ""
+        removeActiveItems()
+        makeAllItemsVisible()
+        input.focus()
+    }
+}
 
-        if (e.key == 'Enter' && isVisible) {
-            let item = getActiveItem()
+function keyDownHandler(e) {
+    if ((e.key == 'Escape') && (isBoxVisible())) {
+        hideNode(modal)
+    }
 
+    if (e.key == 'f' && !(e.ctrlKey || e.altKey || e.shiftKey || e.metaKey) && !isBoxVisible()) {
+        toggleDialog()
+        e.preventDefault()
+    }
+
+    if (!isBoxVisible()) {
+        return
+    }
+
+    switch (e.key) {
+    case 'ArrowDown':
+        activateItem(activeItemIdx + 1)
+        e.preventDefault()
+        break
+    case 'ArrowUp':
+        activateItem(activeItemIdx - 1)
+        e.preventDefault()
+        break
+    case 'Enter':
+        let item = getActiveItem()
+        if (item) {
             jumpToAnchor(item.getAttribute('href'))
-            toggleDialog()
         }
+        toggleDialog()
+        break
+    }
+}
+
+function getActiveItem() {
+    let items = getVisibleItems()
+
+    if (!items) {
+        return
     }
 
-    let activeItemIdx = -1
-
-    function getActiveItem() {
-        let items = getVisibleItems()
-
-        if (!items) {
-            return
-        }
-
-        if (activeItemIdx < items.length ) {
-            return items[activeItemIdx]
-        }
+    if (activeItemIdx < items.length ) {
+        return items[activeItemIdx]
     }
-    
-    function jumpToAnchor(id) {
-        location.hash = id
-    }
+}
 
-    function getVisibleItems() {
-        let itemList = document.getElementById('list-wrap')
-        let list = itemList.querySelectorAll(':not(.invisible-item)')
+function jumpToAnchor(id) {
+    location.hash = id
+}
 
-        return list
-    }
-    
-    function activateItem(num) {
+function getVisibleItems() {
+    return listWrapper.querySelectorAll(':not(.invisible-item)')
+}
 
-        let list = getVisibleItems()
+function activateItem(num) {
 
-        if (!list) {
-            return
-        }
-        
-        if (activeItemIdx != num && activeItemIdx >= 0) {
-            list[activeItemIdx].classList.remove('active-item')
-        }
-        
-        if (num >= 0 && num <= list.length - 1) {
-            list[num].classList.add('active-item')
+    let list = getVisibleItems()
 
-            console.log(itemList.clientHeight)
-            console.log(list[num].getBoundingClientRect().bottom)
-
-            // scroll if current active element is outside visible rectangle
-            if (list[num].getBoundingClientRect().bottom > itemList.getBoundingClientRect().bottom) {
-                list[num].scrollIntoView(false);
-            }
-
-            if (list[num].getBoundingClientRect().top < itemList.getBoundingClientRect().top) {
-                list[num].scrollIntoView();
-            } 
-            
-            activeItemIdx = num
-        }
-
-        if (num > list.length - 1 || num < 0) {
-            activeItemIdx = -1
-        }
+    if (!list) {
+        return
     }
 
-    // Removes class 'active-item' from all items
-    // in the search box
-    function removeActiveItems() {
-        let itemList = document.getElementById('list-wrap')
-        let list = itemList.children;
-
-        if (!list) {
-            return
-        }
-
-        for (var i = 0; i < list.length; i++) {
-            list[i].classList.remove('active-item')
-        }
+    // Remove 'active-item' class from the previous active item
+    // if it differs from the activated item
+    if (activeItemIdx != num && activeItemIdx >= 0) {
+        list[activeItemIdx].classList.remove('active-item')
     }
-    
+
+    if (num >= 0 && num < list.length) {
+        list[num].classList.add('active-item')
+
+        // scroll if current active element is outside visible rectangle
+        if (list[num].getBoundingClientRect().bottom > listWrapper.getBoundingClientRect().bottom) {
+            list[num].scrollIntoView(false);
+        }
+
+        if (list[num].getBoundingClientRect().top < listWrapper.getBoundingClientRect().top) {
+            list[num].scrollIntoView();
+        }
+
+        activeItemIdx = num
+    }
+
+    // Reset current item's index if activated index is
+    // outside the list of visible items
+    if (num > list.length - 1 || num < 0) {
+        activeItemIdx = -1
+    }
+}
+
+// Removes class 'active-item' from all items
+// in the search box
+function removeActiveItems() {
+    if (!items) {
+        return
+    }
+
+    for (let item of items) {
+        item.classList.remove('active-item')
+    }
+}
+
+function assignEventListeners() {
     document.addEventListener('keydown', keyDownHandler);
 
-    let input = document.getElementById('myInput')
     if (input) {
-        input.addEventListener('keyup', myFunction)
+        input.addEventListener('keyup', filterItems)
     }
 
-    let itemList = document.getElementById('list-wrap')
-    let list = itemList.children
-
     // Close search box when user clicks on an item
-    for(let i = 0; i < list.length; i++) {
-        list[i].addEventListener("click", function(e) {
+    for(let item of items){
+        item.addEventListener("click", function(e) {
             toggleDialog();
         })
     }
+}
 
+assignEventListeners()
