@@ -88,6 +88,7 @@ const (
 	CREATE        // create
 	INDEX         // index
 	BY            // by
+	REF           // ref
 
 	keywords_end
 )
@@ -165,6 +166,7 @@ var tokens = [...]string{
 	CREATE:        "create",
 	INDEX:         "index",
 	BY:            "by",
+	REF:           "ref",
 }
 
 var keywords map[string]Token

@@ -5,6 +5,7 @@
 package parser
 
 import (
+	"github.com/cyevgeniy/pldoc/ast"
 	"testing"
 )
 
@@ -506,6 +507,49 @@ func TestRecordFieldTypes(t *testing.T) {
 			if ltypes[i].Params.List[j].T.Name != recFieldTypes[i][j] {
 				t.Fatalf("Record fields' type exception. Expected: %s; Got: %s", recFieldTypes[i][j], ltypes[i].Params.List[j].T.Name)
 			}
+		}
+	}
+}
+
+var refCurSrc = `
+create or replace package test is
+
+procedure test;
+
+function test return number;
+
+c_const constant number := 33;
+
+-- Weakly typed ref cursor
+type t_my_cursor is ref cursor;
+
+-- Strongly typed ref cursor
+type t_my_cursor_2 is ref cursor
+    return
+    my_table%rowtype;
+
+end test;
+`
+
+var refTest = []struct {
+	name string
+	typ  *ast.Ident
+}{
+	{name: "t_my_cursor", typ: nil},
+	{name: "t_my_cursor_2",
+		typ: &ast.Ident{
+			Name: "my_table%rowtype",
+		}},
+}
+
+func TestRefCursors(t *testing.T) {
+	file := ParseFile("testfile", []byte(refCurSrc))
+
+	ltypes := file.Packages[0].TypeDecls
+
+	for i := range ltypes {
+		if ltypes[i].Name.Name != refTest[i].name {
+			t.Fatalf("Ref cursor's name exception. Expected: %s; Got: %s", refTest[i].name, ltypes[i].Name)
 		}
 	}
 }

@@ -314,17 +314,56 @@ func (p *Parser) parseType() ast.Node {
 		ltype.Doc = doc
 		ltype.Name = name
 		node = ltype
+	} else if p.tok == token.REF {
+		ltype := p.parseRefCursorType()
+		ltype.Doc = doc
+		ltype.Name = name
+		node = ltype
 	} else {
-		// temporary skip all other types(ref cursors)
-		// TODO: Add ref cursors parsing
+		// TODO: Check if there are any types that aren't parsed yet
+		//       For now, just jump to semicolon
 		p.scanTo(token.SEMICOLON)
-		node = &ast.TypeDecl{
-			Doc:  doc,
-			Name: name,
-		}
 	}
 
 	return node
+}
+
+func (p *Parser) parseRefCursorType() *ast.TypeDecl {
+	// We are at REF token now. Check if next token is CURSOR
+	p.next()
+	p.expect(token.CURSOR)
+
+	var typ *ast.Ident
+
+	if p.tok != token.SEMICOLON {
+		// Strongly typed ref cursor. It means that
+		// it declared like:
+		//   type cur_name is ref cursor returning type%name;
+		//
+		// So we need to extract its type.
+		p.expect(token.RETURN)
+
+		var typeLit string
+		start := p.pos
+
+		for {
+			if p.tok != token.EOF && p.tok != token.SEMICOLON {
+				typeLit += p.lit
+				p.next()
+			} else {
+				break
+			}
+		}
+
+		typ = &ast.Ident{
+			Name:  typeLit,
+			First: start,
+		}
+	}
+	return &ast.TypeDecl{
+		Kind: ast.TkRefCursor,
+		T:    typ,
+	}
 }
 
 func (p *Parser) parseRecordType() *ast.TypeDecl {
