@@ -105,6 +105,8 @@ func typeListing(td *ast.TypeDecl) string {
 
 	if (td.Kind == ast.TkVarray || td.Kind == ast.TkTable) && td.T != nil {
 		res += " of " + td.T.Name
+	} else if td.Kind == ast.TkRefCursor && td.T != nil {
+		res += " return " + td.T.Name
 	}
 
 	return res
@@ -245,12 +247,10 @@ func Execute(dir string, f *ast.Files) error {
 		return err
 	}
 
-	
 	t, err := template.New("Documentation").Funcs(fm).Parse(tmpl)
 	if err != nil {
 		return err
 	}
-
 
 	for i := range f.Files {
 		for fn := range f.Files[i].Packages {
