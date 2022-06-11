@@ -168,6 +168,26 @@ func (p *Parser) parsePackages() []*ast.Package {
 	return pcks
 }
 
+func (p *Parser) skipPackageBody() {
+	// We are at the beginning of a package. It may
+	// be any position before first package's function, procedure or
+	// anything else that may contain the `begin` keyword.
+	var balance byte = 1
+
+	// Skip until the package's `end` or EOF
+	for(balance != 0 && p.tok != token.EOF) {
+		p.next()
+
+		if p.tok == token.BEGIN {
+			balance += 1
+		} else if p.tok == token.END {
+			balance -= 1
+		}
+	}
+
+	return
+}
+
 func (p *Parser) parsePackage() *ast.Package {
 	var doc *ast.CommentGroup
 
@@ -178,6 +198,7 @@ func (p *Parser) parsePackage() *ast.Package {
 
 	p.scanTo(token.PACKAGE)
 
+	// We may be at EOF or at PACKAGE
 	if p.tok == token.PACKAGE {
 		var pckName *ast.Ident
 
@@ -187,6 +208,12 @@ func (p *Parser) parsePackage() *ast.Package {
 		//       or with schema parameters, like:
 		//       create or replace package &&schema..audit_util as...
 		p.next()
+
+		if p.tok == token.BODY {
+			p.skipPackageBody()
+			return nil
+		}
+
 		p.test(token.IDENT)
 
 		pckName = &ast.Ident{Name: p.lit, First: token.Pos(int(p.pos) - len(p.lit))}

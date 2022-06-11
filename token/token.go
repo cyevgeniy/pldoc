@@ -89,6 +89,7 @@ const (
 	INDEX         // index
 	BY            // by
 	REF           // ref
+	BODY          // body
 
 	keywords_end
 )
@@ -167,6 +168,7 @@ var tokens = [...]string{
 	INDEX:         "index",
 	BY:            "by",
 	REF:           "ref",
+	BODY:          "body",
 }
 
 var keywords map[string]Token
