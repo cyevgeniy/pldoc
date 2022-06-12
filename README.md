@@ -49,7 +49,6 @@ For now, pldoc can generate docs for:
 ## Limitations
 
 - Specification files should be in UTF-8 encoding
-- Each specification sould lie in a separate file
 
 ## Build from source
 ```
@@ -77,6 +76,45 @@ directory will be walked recursively, for example:
 ```
 pldoc --output=documentation source_dir1 source_dir2 source_dir3
 ```
+## Comment styles
 
+It's better not to decorate you comments. Bad example:
 
+```
+/*****************************************
+* This function returns the my_table row
+* by its id
+*****************************************/
+```
 
+Good example:
+
+```
+-- This function returns the my_table row
+-- by its id
+```
+
+Another one good example:
+
+```
+/*
+   This function returns the my_table row
+   by its id
+*/
+```
+
+## Preformatted text and lists
+
+Any line that has greater indentation that comment's first line
+is preformatted text.
+
+```
+-- This procedure returns formatted output of
+-- passed record. It looks like this:
+--     key1: value 1
+--     key2: value 2
+--     key3: value 3
+```
+
+In documentation, lines from 3 to 5 will be enclosed in
+`pre` tag.
