@@ -535,7 +535,17 @@ func (p *Parser) parseField() *ast.Field {
 	for {
 		p.next()
 		if p.tok != token.EOF && p.tok != token.SEMICOLON {
-			typeName = typeName + p.lit
+			lit := p.lit
+
+			// String literals may appear in a field declaration
+			// as default values, like:
+			//     l_var constant varchar2(20) := 'hello';
+			// So, we wrap string literal with "'", because scanner
+			// removes quotes.
+			if p.tok == token.STRING {
+				lit = "'" + p.lit + "'"
+			}
+			typeName = typeName + lit
 		} else {
 			break
 		}
