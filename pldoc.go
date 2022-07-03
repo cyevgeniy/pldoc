@@ -37,9 +37,6 @@ func genFileSet(description string, files []string) (*ast.Files, error) {
 
 }
 
-// TODO: Implement command line interface.
-//       It should looks like 'pldoc directory directory2 directory3 --extension pks --output documentation/directory
-//
 func main() {
 
 	var ext = flag.String("ext", "pks", "The extension of specification files")
