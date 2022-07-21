@@ -151,7 +151,7 @@ func (fm FieldMod) String() string {
 	return ""
 }
 
-// Function's parameter, field in a record type or cursor
+// Function's parameter, field in a record type, or cursor
 type VarType byte
 
 const (
