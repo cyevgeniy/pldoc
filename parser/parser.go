@@ -275,6 +275,12 @@ func (p *Parser) parsePackageNodes(pckName string) []ast.Node {
 	for p.tok != token.EOF {
 		p.next()
 
+		if p.tok == token.DOLLAR {
+			// skip any conditional compilation statements and
+			p.skipCond()
+			continue
+		}
+
 		if p.tok == token.IDENT {
 			v := p.parseField()
 			res = append(res, v)
@@ -314,6 +320,16 @@ func (p *Parser) parsePackageNodes(pckName string) []ast.Node {
 
 	return res
 }
+
+func (p *Parser) skipCond() {
+	p.next()
+
+	// Scan twice for statements like $$ERROR
+	if p.tok == token.DOLLAR {
+		p.next()
+	}
+}
+	
 
 func (p *Parser) parseType() ast.Node {
 
