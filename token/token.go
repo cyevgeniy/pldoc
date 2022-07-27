@@ -47,6 +47,7 @@ const (
 	SEMICOLON // ;
 	COLON     // :
 	DQUOTE    // "
+	DOLLAR    // $
 
 	operators_end
 
@@ -135,6 +136,7 @@ var tokens = [...]string{
 	DOT:       ".",
 	SEMICOLON: ";", // ;
 	COLON:     ":",
+	DOLLAR:    "$",
 
 	AS:            "as",
 	IS:            "is",

@@ -311,6 +311,9 @@ func (s *Scanner) Scan() (pos token.Pos, tok token.Token, lit string) {
 		case '"':
 			tok = token.DQUOTE
 			lit = "\""
+		case '$':
+			tok = token.DOLLAR
+			lit = "$"
 		}
 	}
 
