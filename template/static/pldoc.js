@@ -18,6 +18,9 @@ let modal = document.getElementById('modal')
 // Input field in the search box
 let input = document.getElementById('searchBoxInput')
 
+// Close button
+let closeBtn = document.getElementById('close-modal-btn')
+
 // Parent element for "jump to" items
 let listWrapper = document.getElementById('list-wrap')
 
@@ -197,9 +200,14 @@ function removeActiveItems() {
 function assignEventListeners() {
     document.addEventListener('keydown', keyDownHandler);
 
+    closeBtn.addEventListener('click', function(e) {
+        toggleDialog();
+    })
+    
     if (input) {
         input.addEventListener('keyup', filterItems)
     }
+    
 
     // Close search box when user clicks on an item
     for(let item of items){
