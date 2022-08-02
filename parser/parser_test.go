@@ -151,12 +151,13 @@ procedure tst(
 	-- comment
 	pvar_row2 table_name%rowtype,
 	pvar6 schema.tablename.column%type,
-    pvar7 schema.tablename."column"%type
+    pvar7 schema.tablename."column"%type,
+    pvar8 in clob default empty_clob()
 );
 end tst;
 `
 
-var parCnt []int = []int{1, 2, 2, 2, 4}
+var parCnt []int = []int{1, 2, 2, 2, 5}
 
 func TestFuncParamsCnt(t *testing.T) {
 	file := ParseFile("testfile", []byte(paramsSrc))
@@ -169,7 +170,7 @@ func TestFuncParamsCnt(t *testing.T) {
 	}
 }
 
-var parNames []string = []string{"pvar", "pvar2", "pid_value", "pname_of_the_param", "pvar3", "pvar4", "pvar_row", "pvar5", "pvar_row2", "pvar6", "pvar7"}
+var parNames []string = []string{"pvar", "pvar2", "pid_value", "pname_of_the_param", "pvar3", "pvar4", "pvar_row", "pvar5", "pvar_row2", "pvar6", "pvar7", "pvar8"}
 
 func TestFuncParamNames(t *testing.T) {
 	file := ParseFile("testfile", []byte(paramsSrc))
@@ -191,7 +192,7 @@ func TestFuncParamNames(t *testing.T) {
 }
 
 var parTypes []string = []string{"number", "varchar2", "pck_package.t_mytype", "pls_integer", "date", "mytable.id%type", "table_name%rowtype",
-	"mytable.id%type", "table_name%rowtype", "schema.tablename.column%type", "schema.tablename.\"column\"%type"}
+	"mytable.id%type", "table_name%rowtype", "schema.tablename.column%type", "schema.tablename.\"column\"%type", "clob"}
 
 func TestParamTypes(t *testing.T) {
 	file := ParseFile("testfile", []byte(paramsSrc))
@@ -212,7 +213,7 @@ func TestParamTypes(t *testing.T) {
 	}
 }
 
-var parDefs []string = []string{"null", "3.14", "sysdate", "pck_const.id_default"}
+var parDefs []string = []string{"null", "3.14", "sysdate", "pck_const.id_default", "empty_clob()"}
 
 func TestParamDefaults(t *testing.T) {
 	file := ParseFile("testfile", []byte(paramsSrc))
