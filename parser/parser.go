@@ -704,6 +704,13 @@ func (p *Parser) parseParam() *ast.Field {
 				start = token.Pos(int(p.pos) - len(p.lit))
 			}
 
+			var inParens string
+
+			if p.tok == token.LPAREN {
+				inParens = p.scanBalancedParens()
+				name = name + inParens
+			}
+
 			if p.tok != token.EOF && p.tok != token.COMMA && p.tok != token.RPAREN {
 				name = name + p.lit
 			} else {
@@ -726,6 +733,37 @@ func (p *Parser) parseParam() *ast.Field {
 		Null: false,
 		Kind: ast.VPar,
 	}
+}
+
+// Scan string that starts with "(" and ends with
+// corresponding closing ")". Any nested parentseses
+// are uncluded into result string.
+func (p *Parser) scanBalancedParens() string {
+
+	p.test(token.LPAREN)
+
+	balance := 1
+
+	// Because we start from left paren, it should be
+	// included into resulting string
+	lit := "("
+
+	for balance !=0 && p.tok != token.EOF {
+		p.next()
+		// We shouldn't stop if current right paren
+
+		// is closing in a field's declaration, like
+		// pfield varchar2(2000)
+		if p.tok == token.LPAREN {
+			balance += 1
+		} else if p.tok == token.RPAREN && balance > 0 {
+			balance -= 1
+			lit = lit + p.lit
+			continue
+		}
+	}
+
+	return lit
 }
 
 // Returns function modificators: pipelined,
