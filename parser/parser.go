@@ -630,7 +630,16 @@ func (p *Parser) parseFieldList() *ast.FieldList {
 }
 
 func (p *Parser) parseParam() *ast.Field {
-	ident := p.parseIdent()
+	// Don't use p.scanIdent here, because
+	// function/procedure/record parameter or record field
+	// can be a keyword as well as identifier, so we just
+	// scan what we can and treat scanned literal as Ident
+	p.next()
+	ident := &ast.Ident{
+		Name: p.lit,
+		First: token.Pos(int(p.pos) - len(p.lit)), 
+	}
+
 	var doc *ast.CommentGroup
 	if p.leadComment != nil {
 		doc = p.leadComment
