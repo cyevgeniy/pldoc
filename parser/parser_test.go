@@ -155,7 +155,7 @@ procedure tst(
     -- parameter which is typed as some keyword
     type schema.tablename."column"%type,
     -- Same issue as with previous parameter
-    var in clob default empty_clob()
+    exception in clob default empty_clob()
 );
 end tst;
 `
@@ -173,7 +173,7 @@ func TestFuncParamsCnt(t *testing.T) {
 	}
 }
 
-var parNames []string = []string{"pvar", "pvar2", "pid_value", "pname_of_the_param", "pvar3", "pvar4", "pvar_row", "pvar5", "pvar_row2", "pvar6", "type", "var"}
+var parNames []string = []string{"pvar", "pvar2", "pid_value", "pname_of_the_param", "pvar3", "pvar4", "pvar_row", "pvar5", "pvar_row2", "pvar6", "type", "exception"}
 
 func TestFuncParamNames(t *testing.T) {
 	file := ParseFile("testfile", []byte(paramsSrc))
