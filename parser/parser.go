@@ -198,23 +198,12 @@ func (p *Parser) parsePackage() *ast.Package {
 
 	// We may be at EOF or at PACKAGE
 	if p.tok == token.PACKAGE {
-		var pckName *ast.Ident
-
-		// TODO: Process cases when packages are created with
-		//       schema name, like:
-		//       create or replace package sc.package_name as ...
-		//       or with schema parameters, like:
-		//       create or replace package &&schema..audit_util as...
-		p.next()
-
-		if p.tok == token.BODY {
-			p.skipPackageBody()
+		
+		pckName := p.parsePackageName()
+		if pckName == nil {
 			return nil
 		}
 
-		p.test(token.IDENT)
-
-		pckName = &ast.Ident{Name: p.lit, First: token.Pos(int(p.pos) - len(p.lit))}
 		pckNodes := p.parsePackageNodes(pckName.Name)
 
 		var fSpecs []*ast.FuncSpec
@@ -253,6 +242,49 @@ func (p *Parser) parsePackage() *ast.Package {
 		return nil
 	}
 
+}
+
+// Function parsePackageName returns package name
+// identifier. If package name is specified with
+// schema (like "create or replace package sys.utl_pck as ..."),
+// the schema is ignored. It means that returned package name identifier
+// will be "utl_pck", not "sys.utl_pck". Skips package body and returns nil if
+// current position in the source is package's body, but not
+// its specification
+func (p *Parser) parsePackageName() *ast.Ident  {
+	// we are at token "PACKAGE" now
+	start := p.pos
+	p.next()
+
+	lit := p.lit
+
+	if p.tok == token.BODY {
+		p.skipPackageBody()
+		return nil
+	}
+
+	// Here, our current token may be a schema name (sys.utl_pck)
+	// or a package name (utl_pck). Scan next token to be sure
+	// what to do next. The next token may be a token.DOT (".") in the
+	// first scenario, or one of the (token.AS, token.IS, token.AUTHID) in the
+	// second.
+	p.test(token.IDENT)
+	p.next()
+
+	// Ignore a schema name and parse package name next to it
+	if p.tok == token.DOT {
+		p.next()
+
+		return &ast.Ident{
+			Name: p.lit,
+			First: token.Pos(int(p.pos) - len(p.lit)),
+		}
+	}
+
+	return &ast.Ident{
+		Name: lit,
+		First: start,
+	}
 }
 
 func (p *Parser) expect(tok token.Token) token.Pos {
