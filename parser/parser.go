@@ -545,7 +545,7 @@ func (p *Parser) parseField() *ast.Field {
 		typeName = p.lit
 	}
 
-	// For now, compose all before semicolon in the one big Ident
+	// For now, compose all before semicolon into the one big Ident
 	// In the real world, there can be many options that we need to
 	// parse
 	for {
@@ -602,6 +602,8 @@ func (p *Parser) test(tok token.Token) {
 	}
 }
 
+// Parse function/procedure/cursor parameters or
+// record fields
 func (p *Parser) parseFieldList() *ast.FieldList {
 	open := p.pos
 	var close token.Pos
