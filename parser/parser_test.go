@@ -25,6 +25,36 @@ func TestPackageCount(t *testing.T) {
 	}
 }
 
+var pckNames = []struct{
+	src []byte
+	name string
+}{
+	{
+		[]byte("create or replace package sys.utl_pck as"),
+		"utl_pck",
+	},
+
+	{
+		[]byte("create or replace package avadakedavra authid current_user is"),
+		"avadakedavra",
+	},
+
+	{
+		[]byte("create or replace package utl_pck as"),
+		"utl_pck",
+	},
+}
+
+func TestPackageNames(t *testing.T) {
+	for i := 0; i < len(pckNames); i++ {
+		file := ParseFile("testfile", pckNames[i].src)
+		pckName := file.Packages[0].Name.Name
+		if pckName != string(pckNames[i].name) {
+			t.Fatalf("Package name error. Expected %s; Got: %s\n", string(pckNames[i].name), pckName)
+		}
+	}
+}
+
 var pckDocs = []struct {
 	src []byte
 	doc string
