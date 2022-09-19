@@ -187,7 +187,6 @@ func init() {
 // token character sequence (e.g., for the token ADD, the string is
 // "+"). For all other tokens the string corresponds to the token
 // constant name (e.g. for the token IDENT, the string is "IDENT").
-//
 func (tok Token) String() string {
 	s := ""
 	if 0 <= tok && tok < Token(len(tokens)) {

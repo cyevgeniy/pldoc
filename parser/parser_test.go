@@ -132,13 +132,13 @@ func TestFuncs(t *testing.T) {
 	}
 }
 
-var balancedParensSrc = []struct{
+var balancedParensSrc = []struct {
 	Src []byte
 	Exp string
 }{
-	{ []byte(`(200)`), "(200)"},
-	{ []byte("(t.someval(300))"), "(t.someval(300))"},
-	{ []byte("()"), "()"}, 
+	{[]byte(`(200)`), "(200)"},
+	{[]byte("(t.someval(300))"), "(t.someval(300))"},
+	{[]byte("()"), "()"},
 }
 
 func TestBalancedParens(t *testing.T) {
@@ -150,9 +150,9 @@ func TestBalancedParens(t *testing.T) {
 
 		if res != balancedParensSrc[i].Exp {
 			t.Fatalf("Balanced parens scanning error. Expected content: %s; Given content: %s", balancedParensSrc[i].Exp, res)
-		}	
+		}
 	}
-	
+
 }
 
 var paramsSrc = `
