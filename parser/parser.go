@@ -71,7 +71,6 @@ func (p *Parser) consumeComment() (comment *ast.Comment, endline int) {
 // comments list, and return it together with the line at which
 // the last comment in the group ends. A non-comment token or n
 // empty lines terminate a comment group.
-//
 func (p *Parser) consumeCommentGroup(n int) (comments *ast.CommentGroup, endline int) {
 	var list []*ast.Comment
 	endline = p.file.Line(p.pos)
@@ -102,7 +101,6 @@ func (p *Parser) consumeCommentGroup(n int) (comments *ast.CommentGroup, endline
 //
 // Lead and line comments may be considered documentation that is
 // stored in the AST.
-//
 func (p *Parser) next() {
 	p.leadComment = nil
 	p.lineComment = nil
@@ -175,7 +173,7 @@ func (p *Parser) skipPackageBody() {
 	var balance byte = 1
 
 	// Skip until the package's `end` or EOF
-	for(balance != 0 && p.tok != token.EOF) {
+	for balance != 0 && p.tok != token.EOF {
 		p.next()
 
 		if p.tok == token.BEGIN {
@@ -329,7 +327,6 @@ func (p *Parser) skipCond() {
 		p.next()
 	}
 }
-	
 
 func (p *Parser) parseType() ast.Node {
 
@@ -632,9 +629,9 @@ func (p *Parser) parseFieldList() *ast.FieldList {
 }
 
 // Parse parameter or record field
-//     TODO: Has to be refactored into a more
-//           smaller chunks
 //
+//	TODO: Has to be refactored into a more
+//	      smaller chunks
 func (p *Parser) parseParam() *ast.Field {
 	// Don't use p.scanIdent here, because
 	// function/procedure/record parameter or record field
@@ -642,8 +639,8 @@ func (p *Parser) parseParam() *ast.Field {
 	// scan what we can and treat scanned literal as Ident
 	p.next()
 	ident := &ast.Ident{
-		Name: p.lit,
-		First: token.Pos(int(p.pos) - len(p.lit)), 
+		Name:  p.lit,
+		First: token.Pos(int(p.pos) - len(p.lit)),
 	}
 
 	var doc *ast.CommentGroup
@@ -769,7 +766,7 @@ func (p *Parser) scanBalancedParens() string {
 	// included into the result
 	lit := "("
 
-	for balance !=0 && p.tok != token.EOF {
+	for balance != 0 && p.tok != token.EOF {
 		p.next()
 
 		lit = lit + p.lit
@@ -787,7 +784,8 @@ func (p *Parser) scanBalancedParens() string {
 // Returns function modificators: pipelined,
 // deterministic or result_cache is enabled
 // TODO: Parse function modificators(pipelined, deterministic,
-//       result_cache
+//
+//	result_cache
 func (p *Parser) parseFuncOpts() (bool, bool, bool) {
 	return false, false, false
 }
