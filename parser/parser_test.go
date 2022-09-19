@@ -132,6 +132,29 @@ func TestFuncs(t *testing.T) {
 	}
 }
 
+var balancedParensSrc = []struct{
+	Src []byte
+	Exp string
+}{
+	{ []byte(`(200)`), "(200)"},
+	{ []byte("(t.someval(300))"), "(t.someval(300))"},
+	{ []byte("()"), "()"}, 
+}
+
+func TestBalancedParens(t *testing.T) {
+	var p Parser
+	for i := range balancedParensSrc {
+		p.Init("testfile", balancedParensSrc[i].Src, false)
+
+		res := p.scanBalancedParens()
+
+		if res != balancedParensSrc[i].Exp {
+			t.Fatalf("Balanced parens scanning error. Expected content: %s; Given content: %s", balancedParensSrc[i].Exp, res)
+		}	
+	}
+	
+}
+
 var paramsSrc = `
 create or replace package tst is
 
@@ -155,12 +178,13 @@ procedure tst(
     -- parameter which is typed as some keyword
     type schema.tablename."column"%type,
     -- Same issue as with previous parameter
-    exception in clob default empty_clob()
+    exception in clob default empty_clob(),
+    pvar9 in number
 );
 end tst;
 `
 
-var parCnt []int = []int{1, 2, 2, 2, 5}
+var parCnt []int = []int{1, 2, 2, 2, 6}
 
 func TestFuncParamsCnt(t *testing.T) {
 	file := ParseFile("testfile", []byte(paramsSrc))
@@ -173,7 +197,7 @@ func TestFuncParamsCnt(t *testing.T) {
 	}
 }
 
-var parNames []string = []string{"pvar", "pvar2", "pid_value", "pname_of_the_param", "pvar3", "pvar4", "pvar_row", "pvar5", "pvar_row2", "pvar6", "type", "exception"}
+var parNames []string = []string{"pvar", "pvar2", "pid_value", "pname_of_the_param", "pvar3", "pvar4", "pvar_row", "pvar5", "pvar_row2", "pvar6", "type", "exception", "pvar9"}
 
 func TestFuncParamNames(t *testing.T) {
 	file := ParseFile("testfile", []byte(paramsSrc))
@@ -195,7 +219,7 @@ func TestFuncParamNames(t *testing.T) {
 }
 
 var parTypes []string = []string{"number", "varchar2", "pck_package.t_mytype", "pls_integer", "date", "mytable.id%type", "table_name%rowtype",
-	"mytable.id%type", "table_name%rowtype", "schema.tablename.column%type", "schema.tablename.\"column\"%type", "clob"}
+	"mytable.id%type", "table_name%rowtype", "schema.tablename.column%type", "schema.tablename.\"column\"%type", "clob", "number"}
 
 func TestParamTypes(t *testing.T) {
 	file := ParseFile("testfile", []byte(paramsSrc))

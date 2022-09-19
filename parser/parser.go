@@ -629,6 +629,10 @@ func (p *Parser) parseFieldList() *ast.FieldList {
 	}
 }
 
+// Parse parameter or record field
+//     TODO: Has to be refactored into a more
+//           smaller chunks
+//
 func (p *Parser) parseParam() *ast.Field {
 	// Don't use p.scanIdent here, because
 	// function/procedure/record parameter or record field
@@ -717,7 +721,13 @@ func (p *Parser) parseParam() *ast.Field {
 
 			if p.tok == token.LPAREN {
 				inParens = p.scanBalancedParens()
+
 				name = name + inParens
+
+				// At the end of scanBalancedParens, current
+				// token is the RPAREN, we have to make progress
+				// to the next token
+				p.next()
 			}
 
 			if p.tok != token.EOF && p.tok != token.COMMA && p.tok != token.RPAREN {
@@ -746,7 +756,7 @@ func (p *Parser) parseParam() *ast.Field {
 
 // Scan string that starts with "(" and ends with
 // corresponding closing ")". Any nested parentseses
-// are uncluded into result string.
+// are included into result string.
 func (p *Parser) scanBalancedParens() string {
 
 	p.test(token.LPAREN)
@@ -754,21 +764,18 @@ func (p *Parser) scanBalancedParens() string {
 	balance := 1
 
 	// Because we start from left paren, it should be
-	// included into resulting string
+	// included into the result
 	lit := "("
 
 	for balance !=0 && p.tok != token.EOF {
 		p.next()
-		// We shouldn't stop if current right paren
 
-		// is closing in a field's declaration, like
-		// pfield varchar2(2000)
+		lit = lit + p.lit
+
 		if p.tok == token.LPAREN {
 			balance += 1
-		} else if p.tok == token.RPAREN && balance > 0 {
+		} else if p.tok == token.RPAREN {
 			balance -= 1
-			lit = lit + p.lit
-			continue
 		}
 	}
 
