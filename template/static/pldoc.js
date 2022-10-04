@@ -30,18 +30,18 @@ var items = listWrapper.children
 let activeItemIdx = -1
 
 function isBoxVisible() {
-    return !modal.classList.contains('invisible-item')
+    return !modal.classList.contains('hidden')
 }
 
 function showNode(node) {
     if (node) {
-        node.classList.remove('invisible-item')
+        node.classList.remove('hidden')
     }
 }
 
 function hideNode(node) {
     if (node) {
-        node.classList.add('invisible-item')
+        node.classList.add('hidden')
     }
 }
 
@@ -146,7 +146,7 @@ function jumpToAnchor(id) {
 }
 
 function getVisibleItems() {
-    return listWrapper.querySelectorAll(':not(.invisible-item)')
+    return listWrapper.querySelectorAll(':not(.hidden)')
 }
 
 function activateItem(num) {
@@ -160,11 +160,11 @@ function activateItem(num) {
     // Remove 'active-item' class from the previous active item
     // if it differs from the activated item
     if (activeItemIdx != num && activeItemIdx >= 0) {
-        list[activeItemIdx].classList.remove('active-item')
+        list[activeItemIdx].classList.remove('bg-cyan-700')
     }
 
     if (num >= 0 && num < list.length) {
-        list[num].classList.add('active-item')
+        list[num].classList.add('bg-cyan-700')
 
         // scroll if current active element is outside visible rectangle
         if (list[num].getBoundingClientRect().bottom > listWrapper.getBoundingClientRect().bottom) {
@@ -193,7 +193,7 @@ function removeActiveItems() {
     }
 
     for (let item of items) {
-        item.classList.remove('active-item')
+        item.classList.remove('bg-cyan-700')
     }
 }
 
