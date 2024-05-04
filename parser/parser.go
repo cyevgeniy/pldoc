@@ -1,5 +1,5 @@
 // Copyright 2009 The Go Authors. All rights reserved.
-// Copyright 2022 Yevgeniy Chaban.
+// Copyright 2022, 2024 Evgeny Chaban.
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
@@ -198,7 +198,7 @@ func (p *Parser) parsePackage() *ast.Package {
 
 	// We may be at EOF or at PACKAGE
 	if p.tok == token.PACKAGE {
-		
+
 		pckName := p.parsePackageName()
 		if pckName == nil {
 			return nil
@@ -288,9 +288,7 @@ func (p *Parser) parsePackageName() *ast.Ident  {
 }
 
 func (p *Parser) expect(tok token.Token) token.Pos {
-	if p.tok != tok {
-		panic(fmt.Sprintf("Expected: %s, got: %s\n", tok, p.tok))
-	}
+	p.test(tok)
 
 	pos := p.pos
 	p.next()
@@ -342,7 +340,7 @@ func (p *Parser) parsePackageNodes(pckName string) []ast.Node {
 			p.next()
 
 			if p.tok == token.IDENT && p.lit != pckName {
-				panic("Incorrect package name! Expecting " + pckName)
+				p.panic("Incorrect package name! Expecting " + pckName)
 			}
 			break
 		}
@@ -604,11 +602,13 @@ func (p *Parser) parseField() *ast.Field {
 	}
 }
 
+func (p *Parser) panic(msg string) {
+	panic(fmt.Sprintf("File: %s; line: %d; %s", p.file.Filename,p.file.Line(p.pos), msg))
+}
+
 // Generates Ident from the current parser's state.
 func (p *Parser) genIdent() *ast.Ident {
-	if p.tok != token.IDENT {
-		panic("Error: expected IDENT, got " + p.tok.String())
-	}
+	p.test(token.IDENT)
 
 	return &ast.Ident{Name: p.lit, First: token.Pos(int(p.pos) - len(p.lit))}
 }
@@ -617,9 +617,7 @@ func (p *Parser) genIdent() *ast.Ident {
 func (p *Parser) parseIdent() *ast.Ident {
 	p.next()
 
-	if p.tok != token.IDENT {
-		panic("Expected Ident, got: " + p.tok.String())
-	}
+	p.test(token.IDENT)
 
 	return &ast.Ident{Name: p.lit, First: token.Pos(int(p.pos) - len(p.lit))}
 }
@@ -627,7 +625,7 @@ func (p *Parser) parseIdent() *ast.Ident {
 // Test current token
 func (p *Parser) test(tok token.Token) {
 	if p.tok != tok {
-		panic(fmt.Sprintf("Expected token %s, got %s", tok, p.tok))
+		p.panic(fmt.Sprintf("Expected token %s, got %s", tok, p.tok))
 	}
 }
 
