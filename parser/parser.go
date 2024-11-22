@@ -726,7 +726,19 @@ func (p *Parser) parseParam() *ast.Field {
 			continue
 		}
 
-		if p.tok != token.EOF && p.tok != token.DEFAULT && p.tok != token.COMMA && p.tok != token.RPAREN {
+		// Speciall case for records, where we can have field declaration
+		// like this:
+		//
+		// ```
+		// type t_rec is record (
+		//    count number(30, 28)
+		// )
+		//```
+		// In This case, after we parsed LPAREN, we should not
+		// stop when we met COMMA.
+		commaInsideParens := balance > 0 && p.tok == token.COMMA
+
+		if commaInsideParens || (p.tok != token.EOF && p.tok != token.DEFAULT && p.tok != token.COMMA && p.tok != token.RPAREN) {
 			parType.Name = parType.Name + p.lit
 		} else {
 			break
