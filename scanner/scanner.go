@@ -29,6 +29,10 @@ func (s *Scanner) Init(file *token.File, src []byte) {
 	s.lineOffset = 0
 }
 
+func (s *Scanner) panic(msg string) {
+	log.Fatalf("%s, file: %s", msg, s.file.Filename)
+}
+
 func (s *Scanner) next() {
 	if s.rdOffset < len(s.src) {
 		s.offset = s.rdOffset
@@ -38,7 +42,7 @@ func (s *Scanner) next() {
 		r, w := utf8.DecodeRune(s.src[s.rdOffset:])
 
 		if r == utf8.RuneError && w == 1 {
-			log.Fatal("illegal UTF-8 encoding")
+			s.panic("Illegal UTF-8 encoding")
 		}
 
 		s.rdOffset += w
@@ -109,7 +113,7 @@ func (s *Scanner) scanComment() string {
 		}
 	}
 
-	log.Fatal("comment not terminated")
+	s.panic("Comment not terminated")
 
 exit:
 	lit := s.src[offs:s.offset]
@@ -257,7 +261,7 @@ func (s *Scanner) Scan() (pos token.Pos, tok token.Token, lit string) {
 				lit = "||"
 				s.next()
 			} else {
-				log.Fatal("Expecting another one |")
+				s.panic("Expecting another one |")
 			}
 		case '(':
 			tok = token.LPAREN
