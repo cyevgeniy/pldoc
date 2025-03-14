@@ -7,7 +7,6 @@ package parser
 
 import (
 	"fmt"
-	"strings"
 	"github.com/cyevgeniy/pldoc/ast"
 	"github.com/cyevgeniy/pldoc/scanner"
 	"github.com/cyevgeniy/pldoc/token"
@@ -273,29 +272,17 @@ func (p *Parser) parsePackageName() *ast.Ident  {
 	for {
 		p.next()
 		if p.tok != token.IS && p.tok != token.AS && p.tok != token.AUTHID {
-			lit := p.lit
 
 			// The last identifier between package ... [authid | as | is] is
 			// the package name, so update it each time we meet an identifier.
 			if p.tok == token.IDENT {
 				start = p.pos
+				packageName = p.lit
 			}
-
-			packageName = packageName + lit
 		} else {
 			break
 		}
 	}
-
-	arr := strings.Split(packageName, ".")
-
-	if (len(arr) == 1) {
-		packageName = arr[0]
-	} else {
-		packageName = arr[1]
-	}
-
-	packageName = strings.ReplaceAll(packageName, "\"", "")
 
 	return &ast.Ident{
 		Name: packageName,
