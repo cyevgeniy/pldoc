@@ -254,35 +254,38 @@ func (p *Parser) parsePackage() *ast.Package {
 func (p *Parser) parsePackageName() *ast.Ident  {
 	// we are at token "PACKAGE" now
 	start := p.pos
-	p.next()
-
-	lit := p.lit
 
 	if p.tok == token.BODY {
 		p.skipPackageBody()
 		return nil
 	}
 
-	// Here, our current token may be a schema name (sys.utl_pck)
-	// or a package name (utl_pck). Scan next token to be sure
-	// what to do next. The next token may be a token.DOT (".") in the
-	// first scenario, or one of the (token.AS, token.IS, token.AUTHID) in the
-	// second.
-	p.test(token.IDENT)
-	p.next()
+	packageName := ""
 
-	// Ignore a schema name and parse package name next to it
-	if p.tok == token.DOT {
+	// Scan package name and schema (if exists) and store in `packageName`.
+	//
+	// Examples:
+	// pck_name, Users.pck_name, "Users".pck_name, "Users"."pck_name"
+	//
+	// Then remove quotes and slice the part with the schema, leaving only
+	// a raw package name.
+	for {
 		p.next()
+		if p.tok != token.IS && p.tok != token.AS && p.tok != token.AUTHID {
 
-		return &ast.Ident{
-			Name: p.lit,
-			First: token.Pos(int(p.pos) - len(p.lit)),
+			// The last identifier between package ... [authid | as | is] is
+			// the package name, so update it each time we meet an identifier.
+			if p.tok == token.IDENT {
+				start = p.pos
+				packageName = p.lit
+			}
+		} else {
+			break
 		}
 	}
 
 	return &ast.Ident{
-		Name: lit,
+		Name: packageName,
 		First: start,
 	}
 }

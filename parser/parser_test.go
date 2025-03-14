@@ -43,6 +43,10 @@ var pckNames = []struct{
 		[]byte("create or replace package utl_pck as"),
 		"utl_pck",
 	},
+	{
+		[]byte("create or replace package schema.utl_pck as"),
+		"utl_pck",
+	},
 }
 
 func TestPackageNames(t *testing.T) {

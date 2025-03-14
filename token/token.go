@@ -91,6 +91,7 @@ const (
 	BY            // by
 	REF           // ref
 	BODY          // body
+	AUTHID        // authid
 
 	keywords_end
 )
@@ -171,6 +172,7 @@ var tokens = [...]string{
 	BY:            "by",
 	REF:           "ref",
 	BODY:          "body",
+	AUTHID:        "authid",
 }
 
 var keywords map[string]Token
