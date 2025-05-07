@@ -27,11 +27,11 @@ pre {
   font-size: 14px;
   padding: 8px;
   border-radius: 4px;
-  background-color: var(--cp-color-surface1);
+  background-color: var(--cp-color-surface0);
 }
 
 :root {
-  --p-header-height: 80px;
+  --p-header-height: 50px;
   --p-sidebar-width: 250px;
   --cp-color-base: #eff1f5;
   --cp-color-mantle: #e6e9ef;
@@ -73,6 +73,7 @@ pre {
 .sidebarLink {
   display: block;
   padding: 4px 0;
+  font-size: 14px;
 }
 
 .content {
@@ -84,6 +85,16 @@ pre {
 
 .doc {
   padding: 24px;
+}
+
+.doc h3 {
+  margin: 48px 0 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--cp-color-surface1);
+}
+
+.doc h4 {
+  margin: 32px 0 16px;
 }
 
 header {
