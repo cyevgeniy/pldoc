@@ -284,6 +284,17 @@ func (p *Parser) parsePackageName() *ast.Ident  {
 		}
 	}
 
+	// Skip (current_user or definer) right to the 'AS' or 'IS',
+	// ignoring clauses that we can't handle (accessible by, for example
+	if p.tok == token.AUTHID {
+		for {
+			p.next()
+			if p.tok == token.IS || p.tok == token.AS {
+				break
+			}
+		}
+	}
+
 	return &ast.Ident{
 		Name: packageName,
 		First: start,

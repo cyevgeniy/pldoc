@@ -92,6 +92,8 @@ const (
 	REF           // ref
 	BODY          // body
 	AUTHID        // authid
+	CURRENT_USER  // current_user
+	DEFINER       // definer
 
 	keywords_end
 )
@@ -173,6 +175,8 @@ var tokens = [...]string{
 	REF:           "ref",
 	BODY:          "body",
 	AUTHID:        "authid",
+	CURRENT_USER:   "current_user",
+	DEFINER:        "definer",
 }
 
 var keywords map[string]Token
