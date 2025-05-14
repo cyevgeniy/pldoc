@@ -10,7 +10,15 @@
 
     <body>
         <div class="layout">
-            <header> HEADER </header>
+          <header>
+            <div class="headerContent">
+              <div class="headerDoc">
+                <div class="headerBody">
+                  <div class="packageName">{{.Package.Name.Name}}</div>
+                </div>
+              </div>
+            </div>
+          </header>
             <aside class="sidebar">
                 <nav class="sidebarNav">
                     {{ if .PackageList }}
@@ -28,7 +36,7 @@
                 <div class="doc">
                     {{ with .Package }}
                     {{ with .Doc}}
-                    <h3 class="font-semibold mb-2 mt-4"> Overview </h3>
+                    <h3> Overview </h3>
                     <p>
                         {{.Text}}
                     </p>
@@ -37,14 +45,14 @@
                     <!-- Constant, variables, types -->
 
                     {{ if .VarDecls}}
-                    <h3 class="font-semibold mb-2 mt-4"> Variables, constants </h3>
+                    <h3> Variables, constants </h3>
                     {{ range .VarDecls }}
 
                     <div class="mb-4">
-                        <h4 id="var_{{.Name.Name}}" class="mb-2 font-medium"> {{- varHeader . }} <span class="text-cyan-700"> {{
+                        <h4 id="var_{{.Name.Name}}" > {{- varHeader . }} <span class="identName"> {{
                             .Name.Name }} </span> </h4>
-                        <pre class="overflow-x-auto border rounded font-mono text-sm bg-slate-100 px-4 py-2 my-1">{{ .String }}</pre>
-                        <p class="mt-2"> {{ .Doc.Text }} </p>
+                        <pre>{{ .String }}</pre>
+                        <p> {{ .Doc.Text }} </p>
                     </div>
                     {{ end }}
                     {{ end }}
@@ -52,13 +60,13 @@
 
                     <!-- Functions, procedures -->
                     {{ if .FuncSpecs }}
-                    <h3 class="font-semibold mt-4 mb-2"> Functions, procedures </h3>
+                    <h3> Functions, procedures </h3>
                     {{ range .FuncSpecs }}
-                    <div class="mb-4">
-                        <h4 id="function_{{.Name.Name}}" class="mb-2 font-medium"> {{- funcHeader . }} <span class="text-cyan-700">{{
+                    <div>
+                        <h4 id="function_{{.Name.Name}}" class="mb-2 font-medium"> {{- funcHeader . }} <span class="identName">{{
                             .Name.Name }} </span> </h4>
 
-                        <pre class="overflow-x-auto border rounded font-mono text-sm bg-slate-100 px-4 py-2 my-1">{{ funcListing . }}</pre>
+                        <pre>{{ funcListing . }}</pre>
                         {{ formatComment .Doc }}
                     </div>
                     {{ end }}
@@ -71,9 +79,9 @@
                     {{ range .TypeDecls }}
                     <div class="mb-4">
 
-                        <h4 id="type_{{.Name.Name}}" class="font-medium mb-2"> {{- typeHeader . }} <span class="text-cyan-700">{{
+                        <h4 id="type_{{.Name.Name}}"> {{- typeHeader . }} <span class="identName">{{
                             .Name.Name }} </span> </h4>
-                        <pre class="overflow-x-auto border rounded font-mono text-sm bg-slate-100 px-4 py-2 my-1">{{ typeListing . }}</pre>
+                        <pre>{{ typeListing . }}</pre>
                         <p> {{ .Doc.Text }} </p>
                     </div>
                     {{ end }}
@@ -82,12 +90,12 @@
 
                     <!-- Cursors -->
                     {{ if .CursorDecls }}
-                    <h3 class="font-semibold mt-4 mb-2"> Cursors </h3>
+                    <h3> Cursors </h3>
                     {{ range .CursorDecls }}
-                    <div class="mb-4">
-                        <h4 id="cursor_{{.Name.Name}}" class="font-medium mb-2"> cursor <span class="text-cyan-700">{{ .Name.Name }}
+                    <div>
+                        <h4 id="cursor_{{.Name.Name}}"> cursor <span class="identName">{{ .Name.Name }}
                         </span> </h4>
-                        <pre class="overflow-x-auto border rounded font-mono text-sm bg-slate-100 px-4 py-2 my-1">{{ cursorListing . }}</pre>
+                        <pre>{{ cursorListing . }}</pre>
                         <p> {{ .Doc.Text }} </p>
                     </div>
                     {{ end }}

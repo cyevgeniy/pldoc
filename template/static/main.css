@@ -1,38 +1,7 @@
-body {
-  margin: 0;
-  padding: 0;
-  font-family: sans-serif;
-  background-color: var(--cp-color-base);
-  color: var(--cp-color-text);
-}
-
-a {
-  color: var(--cp-color-blue);
-}
-
-a:hover {
-  color: var(--cp-color-sky);
-}
-
-a:visited {
-  color: var(--cp-color-lavender);
-}
-
-h1, h2, h3, h4, h5, h6 {
-  color: var(--cp-color-subtext0);
-}
-
-pre {
-  overflow-x: auto;
-  font-size: 14px;
-  padding: 8px;
-  border-radius: 4px;
-  background-color: var(--cp-color-surface0);
-}
-
 :root {
   --p-header-height: 50px;
   --p-sidebar-width: 250px;
+  --p-doc-padding: 24px;
   --cp-color-base: #eff1f5;
   --cp-color-mantle: #e6e9ef;
   --cp-color-surface0: #ccd0da;
@@ -40,8 +9,44 @@ pre {
   --cp-color-blue: #1e66f5;
   --cp-color-sky: #04a5e5;
   --cp-color-lavender: #7287fd;
-  --cp-color-text: #4c4f69;
+  --cp-color-text: #3c3c43;
   --cp-color-subtext0: #6c6f85;
+
+  --cp-color-cyan: oklch(52% 0.105 223.128);
+  --cp-color-codeBlock: #f6f6f7;
+  --cp-color-bg-sidebar: #f6f6f7;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: sans-serif;
+  color: var(--cp-color-text);
+}
+
+a {
+  color: var(--cp-color-text);
+}
+
+a:hover {
+  color: var(--cp-color-cyan);
+}
+
+a:visited {
+  color: var(--cp-color-lavender);
+}
+
+pre {
+  overflow-x: auto;
+  font-size: 14px;
+  padding: 8px;
+  border-radius: 4px;
+  background-color: var(--cp-color-codeBlock);
+}
+
+.packageName {
+  font-size: 18px;
+  font-weight: 600;
 }
 
 .layout {
@@ -58,7 +63,7 @@ pre {
   overflow-x: hidden;
   overflow-y: auto;
   box-sizing: border-box;
-  background-color: var(--cp-color-mantle);
+  background-color: var(--cp-color-bg-sidebar);
   z-index: 1;
 }
 
@@ -74,6 +79,7 @@ pre {
   display: block;
   padding: 4px 0;
   font-size: 14px;
+  font-weight: 500;
 }
 
 .content {
@@ -83,12 +89,39 @@ pre {
   box-sizing: border-box;
 }
 
+.headerContent {
+  padding-left: var(--p-sidebar-width);
+  height: var(--p-header-height);
+  width: 100%;
+
+}
+
+.headerDoc {
+  padding: 0 var(--p-doc-padding);
+  height: var(--p-header-height);
+  display: flex;
+  align-items: stretch;
+   border-bottom: 1px solid var(--cp-color-surface0);
+}
+
+.headerBody {
+  background-color: white;
+  width: 100%;
+  display: flex;
+  align-items: center;
+}
+
 .doc {
-  padding: 24px;
+  padding: var(--p-doc-padding);
 }
 
 .doc h3 {
   margin: 48px 0 16px;
+
+
+}
+
+.doc h3:not(:first-child) {
   padding-top: 16px;
   border-top: 1px solid var(--cp-color-surface1);
 }
@@ -103,8 +136,13 @@ header {
   width: 100%;
   top: 0;
   left: 0;
-  background: var(--cp-color-base);
-  border-bottom: 1px solid var(--cp-color-surface0);
-  z-index: 2;
+  background: transparent;
 
+  z-index: 2;
+  display: flex;
+  align-items: center;
+}
+
+.identName {
+  color: var(--cp-color-cyan);
 }
