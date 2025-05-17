@@ -2,56 +2,58 @@
 
     <head>
         <title> {{.Package.Name.Name}} package </title>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link href="main.css" rel="stylesheet" type="text/css" />
-        <script type="text/javascript" defer src="pldoc.js">
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <style>
 
-        </script>
+        </style>
     </head>
 
     <body>
-
-
-
-        <div class="py-4 px-2 bg-cyan-700 w-full top-0">
-            <h2 class="text-white font-medium text-lg"> Package {{.Package.Name.Name}} </h2>
-        </div>
-
-        <div class="flex flex-col lg:flex-row lg:items-stretch max-w-7xl">
-
-            <nav class="px-4 lg:basis-80 flex-none lg:overflow-y-auto">
-                {{ if .PackageList }}
-                <h3 class="mt-4 mb-2 font-semibold"> Packages </h3>
-                <ul>
+        <div class="layout">
+          <header>
+            <div class="headerContent">
+              <div class="headerDoc">
+                <div class="headerBody">
+                  <div class="packageName">{{.Package.Name.Name}}</div>
+                </div>
+              </div>
+            </div>
+          </header>
+            <aside class="sidebar">
+                <nav class="sidebarNav">
+                    {{ if .PackageList }}
+                    <div class="navGroup"> Packages </div>
                     {{ range .PackageList }}
-                    <li class="hover:text-cyan-700">
-                        <a href="{{ .Name.Name }}.html" class="block"> {{ .Name.Name }} </a>
-                    </li>
-                    {{end}}
-                </ul>
-                {{ end }}
-            </nav>
-            <div class="lg:flex-auto lg:w-80">
-                <article class="px-4">
+                    <div><a href="{{ .Name.Name }}.html" class="sidebarLink"> {{ .Name.Name }} </a></div>
+                    {{ end }}
+                    {{ end }}
+                </nav>
+
+
+            </aside>
+
+            <div class="content">
+                <div class="doc">
                     {{ with .Package }}
                     {{ with .Doc}}
-                    <h3 class="font-semibold mb-2 mt-4"> Overview </h3>
+                    <h3> Overview </h3>
                     <p>
-                    {{.Text}}
+                        {{.Text}}
                     </p>
                     {{end}}
 
                     <!-- Constant, variables, types -->
 
                     {{ if .VarDecls}}
-                    <h3 class="font-semibold mb-2 mt-4"> Variables, constants </h3>
+                    <h3> Variables, constants </h3>
                     {{ range .VarDecls }}
 
-                    <div class="mb-4">
-                        <h4 id="var_{{.Name.Name}}" class="mb-2 font-medium"> {{- varHeader . }} <span class="text-cyan-700"> {{
-                                .Name.Name }} </span> </h4>
-                        <pre class="overflow-x-auto border rounded font-mono text-sm bg-slate-100 px-4 py-2 my-1">{{ .String }}</pre>
-                        <p class="mt-2"> {{ .Doc.Text }} </p>
+                    <div>
+                        <h4 id="var_{{.Name.Name}}" > {{- varHeader . }} <span class="identName"> {{
+                            .Name.Name }} </span> </h4>
+                        <pre>{{ .String }}</pre>
+                        <p> {{ .Doc.Text }} </p>
                     </div>
                     {{ end }}
                     {{ end }}
@@ -59,13 +61,13 @@
 
                     <!-- Functions, procedures -->
                     {{ if .FuncSpecs }}
-                    <h3 class="font-semibold mt-4 mb-2"> Functions, procedures </h3>
+                    <h3> Functions, procedures </h3>
                     {{ range .FuncSpecs }}
-                    <div class="mb-4">
-                        <h4 id="function_{{.Name.Name}}" class="mb-2 font-medium"> {{- funcHeader . }} <span class="text-cyan-700">{{
-                                .Name.Name }} </span> </h4>
+                    <div>
+                        <h4 id="function_{{.Name.Name}}"> {{- funcHeader . }} <span class="identName">{{
+                            .Name.Name }} </span> </h4>
 
-                        <pre class="overflow-x-auto border rounded font-mono text-sm bg-slate-100 px-4 py-2 my-1">{{ funcListing . }}</pre>
+                        <pre>{{ funcListing . }}</pre>
                         {{ formatComment .Doc }}
                     </div>
                     {{ end }}
@@ -74,13 +76,13 @@
 
                     <!-- Types -->
                     {{ if .TypeDecls }}
-                    <h3 class="font-semibold mt-4 mb-2"> Types </h3>
+                    <h3> Types </h3>
                     {{ range .TypeDecls }}
-                    <div class="mb-4">
+                    <div>
 
-                        <h4 id="type_{{.Name.Name}}" class="font-medium mb-2"> {{- typeHeader . }} <span class="text-cyan-700">{{
-                                .Name.Name }} </span> </h4>
-                        <pre class="overflow-x-auto border rounded font-mono text-sm bg-slate-100 px-4 py-2 my-1">{{ typeListing . }}</pre>
+                        <h4 id="type_{{.Name.Name}}"> {{- typeHeader . }} <span class="identName">{{
+                            .Name.Name }} </span> </h4>
+                        <pre>{{ typeListing . }}</pre>
                         <p> {{ .Doc.Text }} </p>
                     </div>
                     {{ end }}
@@ -89,61 +91,21 @@
 
                     <!-- Cursors -->
                     {{ if .CursorDecls }}
-                    <h3 class="font-semibold mt-4 mb-2"> Cursors </h3>
+                    <h3> Cursors </h3>
                     {{ range .CursorDecls }}
-                    <div class="mb-4">
-                        <h4 id="cursor_{{.Name.Name}}" class="font-medium mb-2"> cursor <span class="text-cyan-700">{{ .Name.Name }}
-                            </span> </h4>
-                            <pre class="overflow-x-auto border rounded font-mono text-sm bg-slate-100 px-4 py-2 my-1">{{ cursorListing . }}</pre>
-                            <p> {{ .Doc.Text }} </p>
+                    <div>
+                        <h4 id="cursor_{{.Name.Name}}"> cursor <span class="identName">{{ .Name.Name }}
+                        </span> </h4>
+                        <pre>{{ cursorListing . }}</pre>
+                        <p> {{ .Doc.Text }} </p>
                     </div>
                     {{ end }}
 
                     {{ end }}
                     <!-- With Package end -->
                     {{ end }}
-                </article>
-            </div>
-        </div>
-
-
-        <div id="modal" class="hidden w-80 h-80 flex flex-col fixed top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 border border-black bg-white">
-            <div id="header" class="bg-cyan-700 p-2">
-                <h3 class="text-white font-medium"> Quick jump </h3>
-                 
-            </div>
-
-            <div class="px-1 py-2">
-              <input type="text" autocomplete="off" id="searchBoxInput" placeholder="Search..." class="w-full p-1 border border-slate-300 rounded">
-            </div>
-
-           
-
-            <div id="list-wrap" class="h-full flex flex-col overflow-y-auto">
-                {{ with .Package }}
-                {{ range .VarDecls }}
-                <a href="#var_{{.Name.Name}}" class="px-1 py-1 hover:text-cyan-700"> {{- varHeader . }} {{ .Name.Name }} </a>
-                {{ end }}
-
-                {{ range .FuncSpecs }}
-                <a href="#function_{{.Name.Name}}"  class="px-1 py-1 hover:text-cyan-700"> {{- funcHeader . }} {{ .Name.Name }} </a>
-                {{ end }}
-
-                {{ range .TypeDecls }}
-                <a href="#type_{{.Name.Name}}" class="px-1 py-1 hover:text-cyan-700"> {{- typeHeader . }} {{ .Name.Name }} </a>
-                {{ end }}
-
-                {{ range .CursorDecls }}
-                <a href="#cursor_{{.Name.Name}}" class="px-1 py-1 hover:text-cyan-700"> cursor {{ .Name.Name }} </a>
-                {{ end }}
-                <!-- With package end -->
-                {{ end }}
-
-            </div>
-            <div id="close-modal" class="flex flex-row-reverse p-2">
-                <button id="close-modal-btn" class="bg-cyan-700 p-1 text-white border border-black rounded"> Close </button>
-            </div>
-        </div>
-    </body>
-
+          </div>
+      </div>
+    </div>
+  </body>
 </html>
