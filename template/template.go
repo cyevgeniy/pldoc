@@ -45,7 +45,7 @@ func funcHeader(fd *ast.FuncSpec) string {
 	return "procedure"
 }
 
-func funcListing(fd *ast.FuncSpec) string {
+func funcListing(fd *ast.FuncSpec) template.HTML {
 	res := funcHeader(fd)
 
 	if fd.Name != nil && fd.Name.Name != "" {
@@ -58,7 +58,7 @@ func funcListing(fd *ast.FuncSpec) string {
 		res += " return " + fd.T.Name
 	}
 
-	return res
+	return template.HTML(res)
 }
 
 func fieldListListing(fl *ast.FieldList) string {
@@ -72,6 +72,15 @@ func fieldListListing(fl *ast.FieldList) string {
 		res += "(\n"
 		for i := range fl.List {
 			last := i == len(fl.List)-1
+			var field = fl.List[i]
+			if field.Doc != nil {
+				var comments = strings.Split(field.Doc.Text(), "\n")
+				for _, c := range comments {
+					if (len(c) > 0) {
+						res += "    <span class=\"srcComment\">-- " + c + "</span>\n"
+					}
+				}
+			}
 			res += "    " + fl.List[i].String()
 			if !last {
 				res += ","

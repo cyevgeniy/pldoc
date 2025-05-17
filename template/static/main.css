@@ -15,6 +15,7 @@
   --cp-color-cyan: oklch(52% 0.105 223.128);
   --cp-color-codeBlock: #f6f6f7;
   --cp-color-bg-sidebar: #f6f6f7;
+  --cp-color-comment: green;
 }
 
 body {
@@ -23,6 +24,11 @@ body {
   font-family: sans-serif;
   color: var(--cp-color-text);
 }
+
+.srcComment {
+  color: var(--cp-color-comment);
+}
+
 
 a {
   color: var(--cp-color-text);
