@@ -3,6 +3,7 @@
     <head>
         <title> {{.Package.Name.Name}} package </title>
         <link href="main.css" rel="stylesheet" type="text/css" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
         <style>
 
         </style>
@@ -48,7 +49,7 @@
                     <h3> Variables, constants </h3>
                     {{ range .VarDecls }}
 
-                    <div class="mb-4">
+                    <div>
                         <h4 id="var_{{.Name.Name}}" > {{- varHeader . }} <span class="identName"> {{
                             .Name.Name }} </span> </h4>
                         <pre>{{ .String }}</pre>
@@ -63,7 +64,7 @@
                     <h3> Functions, procedures </h3>
                     {{ range .FuncSpecs }}
                     <div>
-                        <h4 id="function_{{.Name.Name}}" class="mb-2 font-medium"> {{- funcHeader . }} <span class="identName">{{
+                        <h4 id="function_{{.Name.Name}}"> {{- funcHeader . }} <span class="identName">{{
                             .Name.Name }} </span> </h4>
 
                         <pre>{{ funcListing . }}</pre>
@@ -75,9 +76,9 @@
 
                     <!-- Types -->
                     {{ if .TypeDecls }}
-                    <h3 class="font-semibold mt-4 mb-2"> Types </h3>
+                    <h3> Types </h3>
                     {{ range .TypeDecls }}
-                    <div class="mb-4">
+                    <div>
 
                         <h4 id="type_{{.Name.Name}}"> {{- typeHeader . }} <span class="identName">{{
                             .Name.Name }} </span> </h4>
